@@ -20,3 +20,18 @@ for column in numeric_columns:
     df[column] = pd.to_numeric(df[column], errors='coerce')
 display(df.dtypes)
 
+#Filling NaNs with the mean of rating_count
+df['rating_count'] = pd.to_numeric(df['rating_count'], errors='coerce')
+mean_rating_count = df['rating_count'].mean()
+df['rating_count'] = df['rating_count'].fillna(mean_rating_count)
+display(df.dtypes)
+
+
+#check duplicate values
+duplicate_values = df.duplicated()
+display(duplicate_values)
+
+if duplicate_values.any():
+  print("Yes there is duplicate values")
+else:
+  print("No there is no duplicate values")
