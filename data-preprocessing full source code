@@ -1,0 +1,22 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+df = pd.read_csv("amazon ds.csv")
+display(df.head()) 
+
+display(pd.isna(df).sum())
+
+display(df.dtypes)
+
+#Convert non numerical to numerical columns
+numeric_columns = ['rating', 'discount_percentage', 'actual_price', 'discounted_price']
+for column in numeric_columns:
+    df[column] = df[column].astype(str)
+    df[column] = df[column].str.replace(r'[₹,%]', '', regex = True)
+    df[column] = df[column].replace(',','')
+    df[column] = pd.to_numeric(df[column], errors='coerce')
+display(df.dtypes)
+
