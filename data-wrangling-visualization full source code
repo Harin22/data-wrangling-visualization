@@ -1,0 +1,84 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+df = pd.read_csv("amazon ds.csv")
+display(df.head()) 
+
+display(pd.isna(df).sum())
+
+display(df.dtypes)
+
+#Convert non numerical to numerical columns
+numeric_columns = ['rating', 'discount_percentage', 'actual_price', 'discounted_price']
+for column in numeric_columns:
+    df[column] = df[column].astype(str)
+    df[column] = df[column].str.replace(r'[₹,%]', '', regex = True)
+    df[column] = df[column].replace(',','')
+    df[column] = pd.to_numeric(df[column], errors='coerce')
+display(df.dtypes)
+
+#Filling NaNs with the mean of rating_count
+df['rating_count'] = pd.to_numeric(df['rating_count'], errors='coerce')
+mean_rating_count = df['rating_count'].mean()
+df['rating_count'] = df['rating_count'].fillna(mean_rating_count)
+display(df.dtypes)
+
+
+#check duplicate values
+duplicate_values = df.duplicated()
+display(duplicate_values)
+
+if duplicate_values.any():
+  print("Yes there is duplicate values")
+else:
+  print("No there is no duplicate values")
+
+
+import seaborn as sns
+
+values = ['rating', 'discount_percentage', 'actual_price', 'discounted_price', 'rating_count']
+for v in values:
+  sns.boxplot(df[v])
+  plt.title("Boxplot of the values")
+  plt.show()
+
+
+for v in values: #also we can checkl scatter plot
+  sns.scatterplot(df[v])
+  plt.title("Boxplot of the values")
+  plt.show()
+
+plt.figure(figsize=(10, 5))
+plt.scatter(range(len(df)), df['actual_price'], alpha=0.5)
+plt.title("Scatter Plot of Actual Price")
+plt.xlabel("Index")
+plt.ylabel("actual_Price")
+plt.show()
+
+
+threshold = 130000
+df_clean = df[df['actual_price'] < threshold]
+
+plt.figure(figsize=(10, 5))
+plt.scatter(range(len(df_clean)), df_clean['actual_price'],alpha=0.5)
+plt.title("Scatter Plot of Actual Price (without Outliers)") #removed that particular one
+plt.xlabel('Index')
+plt.ylabel("Actual Price")
+
+
+cleared_data = df_clean.to_csv("cleared_data.csv", index=False)
+display(df_clean.head())
+plt.show()
+
+missing_values = cleared_data.isnull()
+display(missing_values.sum())
+
+cleared_data = cleared_data.dropna(subset=['rating'])
+display(cleared_data.isnull().sum())
+
+cleared_data.to_csv("final_cleared_data.csv", index = False)
+display(cleared_data.head())
+display(cleared_data.info())
